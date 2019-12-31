@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        html,
+        body {
+            height: 100%;
+        }
+
+        body {
+            background: url('./img/bg.png') no-repeat center/ cover;
+        }
+
+        .box {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 24px;
+            height: 25px;
+            line-height: 25px;
+        }
+
+        input {
+            width: 150px;
+            height: 25px;
+            outline: none;
+            border: none;
+            border-radius: 50px;
+            font-size: 20px;
+            text-align: center;
+        }
+
+        #score {
+            margin-right: 20px;
+        }
+
+        table {
+            margin: 50px auto;
+            cursor: url(./img/chuizi.png), auto;
+        }
+
+        td {
+            width: 150px;
+            height: 150px;
+            background: url('./img/overBg.png') no-repeat center / cover;
+            text-align: center;
+        }
+
+        img {
+            width: 80px;
+            height: 80px;
+        }
+
+        .cover {
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, .3);
+        }
+
+        .cover input {
+            width: 180px;
+            height: 55px;
+            background-image: linear-gradient(45deg, green, yellowgreen);
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            margin-left: -90px;
+            margin-top: -60px;
+        }
+
+        .cover #hard {
+            margin-top: 60px;
+        }
+
+        .coverEnd {
+            width: 100%;
+            height: 900px;
+            background: rgba(0, 0, 0, .3);
+            display: none;
+            position: absolute;
+            top: 0;
+            text-align: center;
+            padding-top: 300px;
+        }
+
+        .coverEnd h1 {
+            font-size: 38px;
+            color: whitesmoke;
+        }
+
+        #restart {
+            width: 180px;
+            height: 60px;
+            font-size: 24px;
+            margin-left: 100px;
+            background-image: linear-gradient(-45deg, green, yellowgreen);
+            display: none;
+            margin: 100px auto;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 遮罩层的盒子 -->
+    <div class="cover">
+        <input type="button" value="简单模式" id="easy">
+        <input type="button" value="地狱模式" id="hard">
+    </div>
+    <!-- 分数和倒计时的盒子 -->
+    <div class="box">
+        分数 <input type="text" value="0" id="score">
+        倒计时 <input type="text" value="3" id="time">
+    </div>
+
+    <!-- 显示老鼠的表格 -->
+    <table>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+    </table>
+
+    <!-- 游戏结束时的遮罩层 -->
+    <div class="coverEnd">
+        <h1 id="tag"></h1>
+        <input type="button" value="重新开始" id="restart">
+    </div>
+
+
+    <script>
+        //js 取消滚动条
+        document.body.parentNode.style.overflowY = "hidden";
+
+        //先找到所有的td标签
+        let tdList = document.querySelectorAll('td');
+        //找到倒计时文本框的内容
+        let time = document.querySelector('#time');
+        //找到table用来切换table的鼠标样式
+        let table = document.querySelector('table');
+        //找到分数
+        let score = document.querySelector('#score');
+        //找到重新开始的按钮
+        let restart = document.querySelector('#restart');
+        //找到游戏结束时的遮罩层
+        let coverEnd = document.querySelector('.coverEnd');
+
+        //给重新开始的按钮添加点击事件
+        restart.onclick = function () {
+            document.querySelector('.cover').style.display = 'block';
+            coverEnd.style.display = 'none';
+        }
+
+
+        //简单模式
+        document.querySelector('#easy').onclick = function () {
+            startGame(780, 990);
+        }
+
+        //地狱模式
+        document.querySelector('#hard').onclick = function () {
+            startGame(550, 600)
+        }
+
+        //封装游戏开始的方法
+        function startGame(start, end) {
+            // 先让遮罩层隐藏
+            document.querySelector('.cover').style.display = 'none';
+
+            //如果重新开始的话，也让时间重置为30秒
+            time.value = 30;
+            //让分数也设置成0
+            score.value = 0;
+
+            //把下面的代码放在计时器里面，每隔一段时间就执行
+            let mouseID = setInterval(function () {
+                //然后生成随机的下标，生成下标的td标签里面生成一个img标签
+                let index = parseInt(Math.random() * tdList.length);
+                tdList[index].innerHTML = '<img src="./img/mouse1.png" alt="">';
+                //隔一段时间要让小老鼠消失 所以用计时器
+                setTimeout(function () {
+                    tdList[index].innerHTML = '';
+                }, start); //这里是老鼠消失的时间
+            }, end)  // 这里是老鼠重新出现的时间
+
+
+            //  先声明一个分数的初始值
+            let scoreNum = 0;
+            //鼠标按下切换锤子图片
+            for (let i = 0; i < tdList.length; i++) {
+                tdList[i].onmousedown = function () {
+                    //改变鼠标的样式
+                    table.style.cursor = 'url(./img/chuizi2.png), auto';
+                    //判断有没有砸到老鼠 实际上就是判断鼠标按下的td标签里面有没有img标签
+                    if (this.children.length != 0) {
+                        //砸中了，就让分数加一 还让老鼠切换图片
+                        scoreNum++;
+                        //切换老鼠的图片
+                        this.children[0].src = './img/mouse2.png';
+                    } else {
+                        scoreNum--;
+                    }
+                    //再把分数渲染到页面上
+                    score.value = scoreNum;
+                }
+                tdList[i].onmouseup = function () {
+                    table.style.cursor = 'url(./img/chuizi.png), auto'
+                }
+            }
+
+            //倒计时功能
+            let timerID = setInterval(function () {
+                time.value--;
+                document.querySelector('#time').value = time.value;
+                if (time.value == 0) {
+                    clearInterval(timerID);
+                    clearInterval(mouseID);
+                    let per = parseFloat(Math.random() * 100);
+                    document.querySelector('#tag').innerHTML = '时间到，游戏结束 <br> 本次得分 ' + score.value + ' 分，击败了全国 ' + per + '% 的用户';
+                    //让重新开始的按钮显示
+                    restart.style.display = 'block';
+                    coverEnd.style.display = 'block';
+                }
+            }, 1000)
+        }
+
+    </script>
+</body>
+
+</html>
